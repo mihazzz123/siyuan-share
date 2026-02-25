@@ -1,6 +1,6 @@
 import { ConfigProvider, theme } from "antd";
 import "antd/dist/reset.css";
-import zhCN from "antd/locale/zh_CN";
+import ruRU from "antd/locale/ru_RU";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.tsx";
@@ -11,7 +11,7 @@ const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <ConfigProvider
-    locale={zhCN}
+    locale={ruRU}
     theme={{
       algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
       token: {
