@@ -4,7 +4,6 @@ node_modules
 .eslintcache
 dist
 package.zip
-index.css
 index.js
 backend/.task
 backend/build
