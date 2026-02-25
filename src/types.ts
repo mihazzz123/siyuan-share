@@ -15,6 +15,7 @@ export interface S3Config {
      *  aws
      */
     provider?: 'aws' | 'oss';
+    addressing?: 'auto' | 'path' | 'virtual';
 }
 
 export interface ShareOptions {

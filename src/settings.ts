@@ -171,6 +171,21 @@ export class ShareSettings {
         s3PathPrefixInput.placeholder = "siyuan-share";
         s3PathPrefixInput.value = this.config.s3.pathPrefix || "";
 
+        const s3AddressingSelect = document.createElement('select');
+        s3AddressingSelect.className = 'b3-select fn__block';
+        const addressings: Array<{val:'auto'|'path'|'virtual'; text:string}> = [
+            { val: 'auto', text: this.plugin.i18n.settingS3AddressingAuto || 'Auto' },
+            { val: 'path', text: this.plugin.i18n.settingS3AddressingPath || 'Path-style' },
+            { val: 'virtual', text: this.plugin.i18n.settingS3AddressingVirtual || 'Virtual-host style' },
+        ];
+        for (const a of addressings) {
+            const opt = document.createElement('option');
+            opt.value = a.val;
+            opt.textContent = a.text;
+            if ((this.config.s3.addressing || 'auto') === a.val) opt.selected = true;
+            s3AddressingSelect.appendChild(opt);
+        }
+
         const setting = new Setting({
             confirmCallback: async () => {
                 // Сохранитьконфигурация
@@ -192,6 +207,7 @@ export class ShareSettings {
                 this.config.s3.customDomain = s3CustomDomainInput.value.trim();
                 this.config.s3.pathPrefix = s3PathPrefixInput.value.trim();
                 this.config.s3.provider = (s3ProviderSelect.value as ('aws'|'oss')) || 'aws';
+                this.config.s3.addressing = (s3AddressingSelect.value as ('auto'|'path'|'virtual')) || 'auto';
                 
                 await this.save();
             }
@@ -199,6 +215,14 @@ export class ShareSettings {
         // 
         this.addGeneralTab(setting, serverUrlInput, apiTokenInput, siyuanTokenInput, defaultPasswordCheckbox, defaultExpireInput, defaultPublicCheckbox);
         this.addS3Tab(setting, s3EnabledCheckbox, s3PasteUploadCheckbox, s3EndpointInput, s3RegionInput, s3BucketInput, s3AccessKeyInput, s3SecretKeyInput, s3CustomDomainInput, s3PathPrefixInput);
+        
+        // S3 Addressing Style
+        setting.addItem({
+            title: this.plugin.i18n.settingS3Addressing || 'S3 Addressing Style',
+            description: this.plugin.i18n.settingS3AddressingDesc || 'Path-style (domain.com/bucket) or Virtual-host style (bucket.domain.com)',
+            createActionElement: () => s3AddressingSelect,
+        });
+
         //  S3 метка provider 
         setting.addItem({
             title: 'S3 Provider ',
