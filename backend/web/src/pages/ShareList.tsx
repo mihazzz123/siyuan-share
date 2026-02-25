@@ -10,13 +10,13 @@ const { Title, Text } = Typography
 function ShareList() {
   const navigate = useNavigate()
   const [shares, setShares] = useState<ShareListItem[]>([])
-  const [loading, setЗагрузка... useState(true)
+  const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
   const pageSize = 10
 
   const loadShares = async (currentPage = 1) => {
-    setЗагрузка...ue)
+    setLoading(true)
     try {
       const res = await listShares(currentPage, pageSize)
       if (res.code === 0) {
@@ -29,7 +29,7 @@ function ShareList() {
     } catch (e: any) {
       message.error(e.response?.data?.msg || e.message || 'Ошибка загрузки')
     } finally {
-      setЗагрузка...lse)
+      setLoading(false)
     }
   }
 
@@ -96,10 +96,10 @@ function ShareList() {
       key: 'access',
       width: 120,
       render: (record: ShareListItem) => {
-        if (record.requireПароль) {
+        if (record.requirePassword) {
           return <Tag color="orange">Защита паролем</Tag>
         }
-        return record.isПубличная ? <Tag color="blue">Публичная</Tag> : <Tag>По ссылке</Tag>
+        return record.isPublic ? <Tag color="blue">Публичная</Tag> : <Tag>По ссылке</Tag>
       }
     },
     {

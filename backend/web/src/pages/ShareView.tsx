@@ -10,7 +10,7 @@ import rehypeRaw from 'rehype-raw'
 import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
 import { getShare, ShareData } from '../api/share'
-import './ShareПросмотр.css'
+import './ShareView.css'
 
 const { Content, Sider } = Layout
 const { Title, Text } = Typography
@@ -22,14 +22,14 @@ interface TocNode {
   children?: TocNode[]
 }
 
-function ShareПросмотр() {
+function ShareView() {
   const { shareId } = useParams<{ shareId: string }>()
-  const [loading, setЗагрузка... useState(true)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [share, setShare] = useState<ShareData | null>(null)
-  const [requireПароль, setRequireПароль] = useState(false)
-  const [password, setПароль] = useState('')
-  const [passwordError, setПарольError] = useState('')
+  const [requirePassword, setRequirePassword] = useState(false)
+  const [password, setPassword] = useState('')
+  const [passwordError, setPasswordError] = useState('')
   const [tocVisible, setTocVisible] = useState(false)
   const [tocTree, setTocTree] = useState<TocNode[]>([])
   const [showBackTop, setShowBackTop] = useState(false)
@@ -39,16 +39,16 @@ function ShareПросмотр() {
   const loadShare = async (pwd?: string) => {
     if (!shareId) return
 
-    setЗагрузка...ue)
+    setLoading(true)
     setError(null)
-    setПарольError('')
+    setPasswordError('')
 
     try {
       const response = await getShare(shareId, pwd)
       
       if (response.code === 0 && response.data) {
         setShare(response.data)
-        setRequireПароль(false)
+        setRequirePassword(false)
       } else {
         setError(response.msg || 'Ошибка загрузки')
       }
@@ -56,14 +56,14 @@ function ShareПросмотр() {
       const errorMsg = err.response?.data?.msg || err.message || 'Ошибка загрузки'
       
       if (errorMsg.includes('Пароль required')) {
-        setRequireПароль(true)
+        setRequirePassword(true)
       } else if (errorMsg.includes('Invalid password')) {
-        setПарольError('Неверный пароль')
+        setPasswordError('Неверный пароль')
       } else {
         setError(errorMsg)
       }
     } finally {
-      setЗагрузка...lse)
+      setLoading(false)
     }
   }
 
@@ -99,7 +99,7 @@ function ShareПросмотр() {
     headingEls.forEach(el => {
       // исключениекодаБлоквнутризаголовка: еслипредковсуществует PRE  или  CODE（ и не являетсясамо по себеестькодаметка）
       if (el.closest('pre, code')) return
-      const level = Number(el.tagНазвание.substring(1))
+      const level = Number(el.tagName.substring(1))
       const text = el.textContent?.trim() || ''
       if (!text) return
       // если rehypeSlug генерация id использование，иначегенерация
@@ -178,12 +178,12 @@ function ShareПросмотр() {
       if (pre.querySelector('.copy-code-btn')) return
 
       const wrapper = document.createElement('div')
-      wrapper.classНазвание = 'code-block-wrapper'
+      wrapper.className = 'code-block-wrapper'
       pre.parentNode?.insertBefore(wrapper, pre)
       wrapper.appendChild(pre)
 
       const copyBtn = document.createElement('button')
-      copyBtn.classНазвание = 'copy-code-btn'
+      copyBtn.className = 'copy-code-btn'
       copyBtn.innerHTML = '<svg viewBox="64 64 896 896" width="1em" height="1em" fill="currentColor"><path d="M832 64H296c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h496v688c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8V96c0-17.7-14.3-32-32-32zM704 192H192c-17.7 0-32 14.3-32 32v530.7c0 8.5 3.4 16.6 9.4 22.6l173.3 173.3c2.2 2.2 4.7 4 7.4 5.5v1.9h4.2c3.5 1.3 7.2 2 11 2H704c17.7 0 32-14.3 32-32V224c0-17.7-14.3-32-32-32zM350 856.2L263.9 770H350v86.2zM664 888H414V746c0-22.1-17.9-40-40-40H232V264h432v624z"></path></svg>'
       copyBtn.title = 'Копировать code'
       
@@ -211,10 +211,10 @@ function ShareПросмотр() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const handleПарольSubmit = (e: React.FormEvent) => {
+  const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!password.trim()) {
-      setПарольError('Введите пароль')
+      setPasswordError('Введите пароль')
       return
     }
     loadShare(password)
@@ -233,22 +233,22 @@ function ShareПросмотр() {
 
   if (loading) {
     return (
-      <div classНазвание="share-view-loading">
+      <div className="share-view-loading">
         <Spin size="large" tip="Загрузка..." />
       </div>
     )
   }
 
-  if (requireПароль) {
+  if (requirePassword) {
     return (
-      <div classНазвание="share-view-password">
-        <div classНазвание="password-card">
+      <div className="share-view-password">
+        <div className="password-card">
           <Title level={3}>Для этой публикации требуется пароль</Title>
-          <form onSubmit={handleПарольSubmit}>
-            <Input.Пароль
+          <form onSubmit={handlePasswordSubmit}>
+            <Input.Password
               size="large"
               value={password}
-              onChange={(e) => setПароль(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Введите пароль доступа"
               status={passwordError ? 'error' : ''}
             />
@@ -272,13 +272,13 @@ function ShareПросмотр() {
     const isNotFound = error.toLowerCase().includes('not found') || error.includes('не существует')
     
     return (
-      <div classНазвание="share-view-error">
+      <div className="share-view-error">
         <Result
           icon={isNotFound ? <FileSearchOutlined /> : <ExclamationCircleOutlined />}
           status={isNotFound ? '404' : 'error'}
           title={isNotFound ? 'Страница не найдена' : 'Ошибка загрузки'}
           subTitle={
-            <div classНазвание="error-subtitle">
+            <div className="error-subtitle">
               <Text type="secondary">
                 {isNotFound 
                   ? 'Извините, запрашиваемая страница не существует или срок ее действия истек' 
@@ -311,13 +311,13 @@ function ShareПросмотр() {
 
   if (!share) {
     return (
-      <div classНазвание="share-view-error">
+      <div className="share-view-error">
         <Result
           icon={<FileSearchOutlined />}
           status="404"
           title="Страница не найдена"
           subTitle={
-            <div classНазвание="error-subtitle">
+            <div className="error-subtitle">
               <Text type="secondary">
                 Извините, запрашиваемая страница не существует или срок ее действия истек
               </Text>
@@ -339,12 +339,12 @@ function ShareПросмотр() {
   }
 
   return (
-    <div classНазвание="share-view">
+    <div className="share-view">
       <Layout>
         {/* Кнопка оглавления для мобильных */}
         {tocTree.length > 0 && (
           <Button
-            classНазвание="mobile-toc-button"
+            className="mobile-toc-button"
             type="primary"
             onClick={() => setTocVisible(true)}
           >
@@ -355,7 +355,7 @@ function ShareПросмотр() {
         {/* Кнопка Наверх */}
         {showBackTop && (
           <Button
-            classНазвание="back-to-top-button"
+            className="back-to-top-button"
             type="primary"
             shape="circle"
             icon={<UpOutlined />}
@@ -370,7 +370,7 @@ function ShareПросмотр() {
           placement="left"
           onClose={() => setTocVisible(false)}
           open={tocVisible}
-          classНазвание="mobile-toc-drawer"
+          className="mobile-toc-drawer"
         >
           <Anchor
             affix={false}
@@ -379,15 +379,15 @@ function ShareПросмотр() {
           />
         </Drawer>
 
-        <Layout classНазвание="share-layout">
+        <Layout className="share-layout">
           {/* Боковое оглавление для ПК */}
           {tocTree.length > 0 && (
             <Sider 
               width={250} 
-              classНазвание="desktop-toc-sider"
+              className="desktop-toc-sider"
               theme="light"
             >
-              <div classНазвание="toc-wrapper">
+              <div className="toc-wrapper">
                 <Title level={5}>Содержание</Title>
                 <Anchor
                   affix={false}
@@ -397,15 +397,15 @@ function ShareПросмотр() {
             </Sider>
           )}
 
-          <Content classНазвание="share-content-wrapper">
-            <div classНазвание={`share-header ${headerShrink ? 'shrink' : ''}`}>
+          <Content className="share-content-wrapper">
+            <div className={`share-header ${headerShrink ? 'shrink' : ''}`}>
               <Title level={1}>{share.docTitle}</Title>
-              <div classНазвание="share-meta">
+              <div className="share-meta">
                 <Text type="secondary">
                   <EyeOutlined /> {share.viewCount} просмотров
                 </Text>
                 <Text type="secondary">
-                  Создатьd: {new Date(share.createdAt).toLocaleString()}
+                  Создано: {new Date(share.createdAt).toLocaleString()}
                 </Text>
                 <Text type="secondary">
                   Истекает: {new Date(share.expireAt).toLocaleString()}
@@ -413,7 +413,7 @@ function ShareПросмотр() {
               </div>
             </div>
             
-            <div ref={contentRef} classНазвание="markdown-body share-content">
+            <div ref={contentRef} className="markdown-body share-content">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw, rehypeHighlight, rehypeSlug]}
@@ -436,7 +436,7 @@ function ShareПросмотр() {
               </ReactMarkdown>
             </div>
 
-            <div classНазвание="share-footer">
+            <div className="share-footer">
               <Text type="secondary">Работает на плагине SiYuan Share</Text>
             </div>
           </Content>
@@ -446,4 +446,4 @@ function ShareПросмотр() {
   )
 }
 
-export default ShareПросмотр
+export default ShareView

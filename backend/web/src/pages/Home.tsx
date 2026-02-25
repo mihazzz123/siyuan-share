@@ -24,22 +24,22 @@ interface ВходResponse { token: string; user: { id: string; username: string
 
 function Home() {
   const [health, setHealth] = useState<HealthData | null>(null)
-  const [loading, setЗагрузка... useState(true)
+  const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('status')
   const [sessionUser, setSessionUser] = useState<{ id: string; username: string; email: string } | null>(null)
-  const [loadingДействие, setЗагрузка...ion] = useState(false)
+  const [loadingAction, setLoadingAction] = useState(false)
   const [loginForm] = Form.useForm()
   const [registerForm] = Form.useForm()
 
   const loadHealth = async () => {
-    setЗагрузка...ue)
+    setLoading(true)
     try {
       const res = await api.get('/api/health') as HealthData
       setHealth(res)
     } catch (e: any) {
       message.error('Не удалось подключиться к бэкенду')
     } finally {
-      setЗагрузка...lse)
+      setLoading(false)
     }
   }
 
@@ -59,7 +59,7 @@ function Home() {
   }, [])
 
   const handleРегистрация = async (values: any) => {
-    setЗагрузка...ion(true)
+    setLoadingAction(true)
     try {
       const res = await api.post('/api/auth/register', values) as ApiResponse
       if (res.code === 0) {
@@ -72,12 +72,12 @@ function Home() {
     } catch (e: any) {
       message.error(e.response?.data?.msg || e.message || 'Ошибка регистрации')
     } finally {
-      setЗагрузка...ion(false)
+      setLoadingAction(false)
     }
   }
 
   const handleВход = async (values: any) => {
-    setЗагрузка...ion(true)
+    setLoadingAction(true)
     try {
       const res = await api.post('/api/auth/login', values) as ApiResponse<ВходResponse>
       if (res.code === 0) {
@@ -92,7 +92,7 @@ function Home() {
     } catch (e: any) {
       message.error(e.response?.data?.msg || e.message || 'Ошибка входа')
     } finally {
-      setЗагрузка...ion(false)
+      setLoadingAction(false)
     }
   }
 
@@ -162,10 +162,10 @@ function Home() {
               <Input prefix={<UserOutlined />} placeholder="Имя пользователя" />
             </Form.Item>
             <Form.Item name="password" rules={[{ required: true, message: 'Введите пароль' }]}>
-              <Input.Пароль prefix={<LockOutlined />} placeholder="Пароль" />
+              <Input.Password prefix={<LockOutlined />} placeholder="Пароль" />
             </Form.Item>
             <Form.Item>
-              <Button type="primary" htmlType="submit" block loading={loadingДействие} size="large">
+              <Button type="primary" htmlType="submit" block loading={loadingAction} size="large">
                 Вход
               </Button>
             </Form.Item>
@@ -190,7 +190,7 @@ function Home() {
               <Input prefix={<MailOutlined />} placeholder="Email" />
             </Form.Item>
             <Form.Item name="password" rules={[{ required: true, message: 'Введите пароль' }, { min: 6, message: 'Минимум 6 символов' }]}>
-              <Input.Пароль prefix={<LockOutlined />} placeholder="Пароль" />
+              <Input.Password prefix={<LockOutlined />} placeholder="Пароль" />
             </Form.Item>
             <Form.Item
               name="password2"
@@ -207,10 +207,10 @@ function Home() {
                 })
               ]}
             >
-              <Input.Пароль prefix={<LockOutlined />} placeholder="Подтвердите пароль" />
+              <Input.Password prefix={<LockOutlined />} placeholder="Подтвердите пароль" />
             </Form.Item>
             <Form.Item>
-              <Button type="primary" htmlType="submit" block loading={loadingДействие} size="large">
+              <Button type="primary" htmlType="submit" block loading={loadingAction} size="large">
                 Регистрация
               </Button>
             </Form.Item>
@@ -224,8 +224,8 @@ function Home() {
   ]
 
   return (
-    <div classНазвание="home-container">
-      <div classНазвание="home-header">
+    <div className="home-container">
+      <div className="home-header">
         <Title level={2} style={{ margin: 0, fontSize: 28, fontWeight: 600 }}>
           <ApiOutlined style={{ marginRight: 12, color: '#1890ff' }} />
           Сервис публикации SiYuan
@@ -235,11 +235,11 @@ function Home() {
         </Paragraph>
       </div>
 
-      <Card classНазвание="home-card" bordered={false}>
+      <Card className="home-card" bordered={false}>
         <Tabs activeKey={activeTab} onChange={setActiveTab} items={sessionUser ? tabItems.filter(item => item.key === 'status') : tabItems} size="large" />
       </Card>
 
-      <Card classНазвание="usage-card" bordered={false} style={{ marginTop: 24 }}>
+      <Card className="usage-card" bordered={false} style={{ marginTop: 24 }}>
         <Title level={4} style={{ marginBottom: 16 }}>Инструкция</Title>
         <Space direction="vertical" size="small" style={{ width: '100%' }}>
           <Paragraph style={{ margin: 0 }}>

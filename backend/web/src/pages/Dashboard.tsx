@@ -13,14 +13,14 @@ function Dashboard() {
   const navigate = useNavigate()
   const [user, setUser] = useState<any>(null)
   const [tokens, setTokens] = useState<TokenItem[]>([])
-  const [loading, setЗагрузка... useState(true)
-  const [actionЗагрузка...etДействиеЗагрузка... useState<string>('')
-  const [createModalOpen, setСоздатьModalOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [actionLoading, setActionLoading] = useState<string>('')
+  const [createModalOpen, setCreateModalOpen] = useState(false)
   const [newTokenData, setNewTokenData] = useState<{ name: string; token: string } | null>(null)
   const [form] = Form.useForm()
 
   const loadAll = async () => {
-    setЗагрузка...ue)
+    setLoading(true)
     try {
       const me = await api.get('/api/user/me') as ApiResp<any>
       if (me.code === 0) setUser(me.data)
@@ -29,21 +29,21 @@ function Dashboard() {
     } catch (e: any) {
       message.error(e.message || 'Ошибка загрузки')
     } finally {
-      setЗагрузка...lse)
+      setLoading(false)
     }
   }
 
   useEffect(() => { loadAll() }, [])
 
   const createToken = async (values: any) => {
-    setДействиеЗагрузка...reate')
+    setActionLoading('create')
     try {
       const res = await api.post('/api/token/create', values) as ApiResp<any>
       if (res.code === 0) {
         setNewTokenData({ name: res.data.name, token: res.data.token })
         message.success('Token успешно создан')
         form.resetFields()
-        setСоздатьModalOpen(false)
+        setCreateModalOpen(false)
         loadAll()
       } else {
         message.error(res.msg || 'Ошибка создания')
@@ -51,12 +51,12 @@ function Dashboard() {
     } catch (e: any) {
       message.error(e.response?.data?.msg || e.message || 'Ошибка создания')
     } finally {
-      setДействиеЗагрузка...)
+      setActionLoading('')
     }
   }
 
   const refreshToken = async (id: string, name: string) => {
-    setДействиеЗагрузка...)
+    setActionLoading(id)
     try {
       const res = await api.post(`/api/token/refresh/${id}`, {}) as ApiResp<any>
       if (res.code === 0) {
@@ -69,7 +69,7 @@ function Dashboard() {
     } catch (e: any) {
       message.error(e.response?.data?.msg || e.message || 'Ошибка обновления')
     } finally {
-      setДействиеЗагрузка...)
+      setActionLoading('')
     }
   }
 
@@ -81,7 +81,7 @@ function Dashboard() {
       cancelText: 'Отмена',
       okType: 'danger',
       onOk: async () => {
-        setДействиеЗагрузка...)
+        setActionLoading(id)
         try {
           const res = await api.post(`/api/token/revoke/${id}`, {}) as ApiResp<any>
           if (res.code === 0) {
@@ -93,7 +93,7 @@ function Dashboard() {
         } catch (e: any) {
           message.error(e.response?.data?.msg || e.message || 'Ошибка отзыва')
         } finally {
-          setДействиеЗагрузка...)
+          setActionLoading('')
         }
       }
     })
@@ -142,8 +142,8 @@ function Dashboard() {
             type="link"
             size="small"
             icon={<ReloadOutlined />}
-            disabled={record.revoked || actionЗагрузка...= record.id}
-            loading={actionЗагрузка...= record.id}
+            disabled={record.revoked || actionLoading === record.id}
+            loading={actionLoading === record.id}
             onClick={() => refreshToken(record.id, record.name)}
           >
             Обновить
@@ -153,7 +153,7 @@ function Dashboard() {
             size="small"
             danger
             icon={<УдалитьOutlined />}
-            disabled={record.revoked || actionЗагрузка...= record.id}
+            disabled={record.revoked || actionLoading === record.id}
             onClick={() => revokeToken(record.id)}
           >
             Отозвать
@@ -230,7 +230,7 @@ function Dashboard() {
           <Button
             type="primary"
             icon={<PlusOutlined />}
-            onClick={() => setСоздатьModalOpen(true)}
+            onClick={() => setCreateModalOpen(true)}
           >
             Создать новый Token
           </Button>
@@ -253,8 +253,8 @@ function Dashboard() {
       <Modal
         title="Создать новый Token"
         open={createModalOpen}
-        onОтмена={() => {
-          setСоздатьModalOpen(false)
+        onCancel={() => {
+          setCreateModalOpen(false)
           form.resetFields()
         }}
         footer={null}
@@ -269,11 +269,11 @@ function Dashboard() {
           </Form.Item>
           <Form.Item>
             <Space>
-              <Button type="primary" htmlType="submit" loading={actionЗагрузка...= 'create'}>
+              <Button type="primary" htmlType="submit" loading={actionLoading === 'create'}>
                 Создать
               </Button>
               <Button onClick={() => {
-                setСоздатьModalOpen(false)
+                setCreateModalOpen(false)
                 form.resetFields()
               }}>
                 Отмена
@@ -286,7 +286,7 @@ function Dashboard() {
       <Modal
         title="Token создан"
         open={!!newTokenData}
-        onОтмена={() => setNewTokenData(null)}
+        onCancel={() => setNewTokenData(null)}
         footer={[
           <Button key="copy" type="primary" icon={<КопироватьOutlined />} onClick={() => copyToken(newTokenData!.token)}>
             Копировать Token
