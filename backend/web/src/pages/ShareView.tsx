@@ -55,7 +55,7 @@ function ShareView() {
     } catch (err: any) {
       const errorMsg = err.response?.data?.msg || err.message || 'Ошибка загрузки'
       
-      if (errorMsg.includes('Пароль required')) {
+      if (errorMsg.includes('Password required')) {
         setRequirePassword(true)
       } else if (errorMsg.includes('Invalid password')) {
         setPasswordError('Неверный пароль')
@@ -97,7 +97,7 @@ function ShareView() {
     }
 
     headingEls.forEach(el => {
-      // исключениекодаБлоквнутризаголовка: еслипредковсуществует PRE  или  CODE（ и не являетсясамо по себеестькодаметка）
+      // исключение кодового блока внутри заголовка: если предком существует PRE или CODE (и не является сам по себе есть кода метка)
       if (el.closest('pre, code')) return
       const level = Number(el.tagName.substring(1))
       const text = el.textContent?.trim() || ''

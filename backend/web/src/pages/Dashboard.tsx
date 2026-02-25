@@ -1,4 +1,4 @@
-import { ApiOutlined, КопироватьOutlined, УдалитьOutlined, HomeOutlined, PlusOutlined, ReloadOutlined, ShareAltOutlined, UserOutlined } from '@ant-design/icons'
+import { ApiOutlined, CopyOutlined, DeleteOutlined, HomeOutlined, PlusOutlined, ReloadOutlined, ShareAltOutlined, UserOutlined } from '@ant-design/icons'
 import { Button, Card, Divider, Form, Input, message, Modal, Space, Table, Tag, Typography } from 'antd'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -152,7 +152,7 @@ function Dashboard() {
             type="link"
             size="small"
             danger
-            icon={<УдалитьOutlined />}
+            icon={<DeleteOutlined />}
             disabled={record.revoked || actionLoading === record.id}
             onClick={() => revokeToken(record.id)}
           >
@@ -288,7 +288,7 @@ function Dashboard() {
         open={!!newTokenData}
         onCancel={() => setNewTokenData(null)}
         footer={[
-          <Button key="copy" type="primary" icon={<КопироватьOutlined />} onClick={() => copyToken(newTokenData!.token)}>
+          <Button key="copy" type="primary" icon={<CopyOutlined />} onClick={() => copyToken(newTokenData!.token)}>
             Копировать Token
           </Button>,
           <Button key="close" onClick={() => setNewTokenData(null)}>

@@ -1,4 +1,4 @@
-import { ArrowLeftOutlined, КопироватьOutlined, УдалитьOutlined, ReloadOutlined } from '@ant-design/icons'
+import { ArrowLeftOutlined, CopyOutlined, DeleteOutlined, ReloadOutlined } from '@ant-design/icons'
 import { Button, Card, message, Modal, Space, Table, Tag, Typography } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { useEffect, useState } from 'react'
@@ -41,11 +41,11 @@ function ShareList() {
     navigator.clipboard.writeText(url).then(() => {
       message.success('Ссылка скопирована')
     }).catch(() => {
-      message.error('Копировать failed')
+      message.error('Copy failed')
     })
   }
 
-  const handleУдалить = async (id: string, docTitle: string) => {
+  const handleDelete = async (id: string, docTitle: string) => {
     Modal.confirm({
       title: 'Подтвердите удаление',
       content: `Вы уверены, что хотите удалить публикацию"${docTitle}"? Это действие нельзя отменить.`,
@@ -68,7 +68,7 @@ function ShareList() {
     })
   }
 
-  const isИстекла = (expireAt: string) => {
+  const isExpired = (expireAt: string) => {
     return new Date(expireAt) <= new Date()
   }
 
@@ -86,8 +86,8 @@ function ShareList() {
       key: 'status',
       width: 100,
       render: (expireAt: string) => (
-        <Tag color={isИстекла(expireAt) ? 'default' : 'success'}>
-          {isИстекла(expireAt) ? 'Истекла' : 'Активна'}
+        <Tag color={isExpired(expireAt) ? 'default' : 'success'}>
+          {isExpired(expireAt) ? 'Истекла' : 'Активна'}
         </Tag>
       )
     },
@@ -103,7 +103,7 @@ function ShareList() {
       }
     },
     {
-      title: 'Просмотрs',
+      title: 'Views',
       dataIndex: 'viewCount',
       key: 'viewCount',
       width: 100,
@@ -136,7 +136,7 @@ function ShareList() {
           <Button
             type="link"
             size="small"
-            icon={<КопироватьOutlined />}
+            icon={<CopyOutlined />}
             onClick={() => copyShareUrl(record.shareUrl)}
           >
             Копировать
@@ -145,8 +145,8 @@ function ShareList() {
             type="link"
             size="small"
             danger
-            icon={<УдалитьOutlined />}
-            onClick={() => handleУдалить(record.id, record.docTitle)}
+            icon={<DeleteOutlined />}
+            onClick={() => handleDelete(record.id, record.docTitle)}
           >
             Удалить
           </Button>

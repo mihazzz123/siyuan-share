@@ -1,4 +1,4 @@
-import { ApiOutlined, DashboardOutlined, LockOutlined, ВыйтиOutlined, MailOutlined, UserOutlined } from '@ant-design/icons'
+import { ApiOutlined, DashboardOutlined, LockOutlined, LogoutOutlined, MailOutlined, UserOutlined } from '@ant-design/icons'
 import { Button, Card, Divider, Form, Input, Space, Tabs, Tag, Typography, message } from 'antd'
 import { useEffect, useState } from 'react'
 import api from '../api'
@@ -20,7 +20,7 @@ interface ApiResponse<T = any> {
   data: T
 }
 
-interface ВходResponse { token: string; user: { id: string; username: string; email: string } }
+interface LoginResponse { token: string; user: { id: string; username: string; email: string } }
 
 function Home() {
   const [health, setHealth] = useState<HealthData | null>(null)
@@ -58,7 +58,7 @@ function Home() {
     restoreSession()
   }, [])
 
-  const handleРегистрация = async (values: any) => {
+  const handleRegister = async (values: any) => {
     setLoadingAction(true)
     try {
       const res = await api.post('/api/auth/register', values) as ApiResponse
@@ -76,10 +76,10 @@ function Home() {
     }
   }
 
-  const handleВход = async (values: any) => {
+  const handleLogin = async (values: any) => {
     setLoadingAction(true)
     try {
-      const res = await api.post('/api/auth/login', values) as ApiResponse<ВходResponse>
+      const res = await api.post('/api/auth/login', values) as ApiResponse<LoginResponse>
       if (res.code === 0) {
         localStorage.setItem('session_token', res.data.token)
         setSessionUser(res.data.user)
@@ -96,7 +96,7 @@ function Home() {
     }
   }
 
-  const handleВыйти = () => {
+  const handleLogout = () => {
     localStorage.removeItem('session_token')
     setSessionUser(null)
     message.info('Выход выполнен')
@@ -133,7 +133,7 @@ function Home() {
                       <Button type="primary" icon={<DashboardOutlined />} href="/dashboard">
                         В кабинет
                       </Button>
-                      <Button icon={<ВыйтиOutlined />} onClick={handleВыйти}>Выйти</Button>
+                      <Button icon={<LogoutOutlined />} onClick={handleLogout}>Выйти</Button>
                     </Space>
                   </Space>
                 </Card>
@@ -157,7 +157,7 @@ function Home() {
       children: (
         <div style={{ padding: '24px 0', maxWidth: 400, margin: '0 auto' }}>
           <Title level={4} style={{ textAlign: 'center', marginBottom: 24 }}>С возвращением</Title>
-          <Form form={loginForm} onFinish={handleВход} layout="vertical" size="large">
+          <Form form={loginForm} onFinish={handleLogin} layout="vertical" size="large">
             <Form.Item name="username" rules={[{ required: true, message: 'Введите имя пользователя' }]}>
               <Input prefix={<UserOutlined />} placeholder="Имя пользователя" />
             </Form.Item>
@@ -182,7 +182,7 @@ function Home() {
       children: (
         <div style={{ padding: '24px 0', maxWidth: 400, margin: '0 auto' }}>
           <Title level={4} style={{ textAlign: 'center', marginBottom: 24 }}>Создать Account</Title>
-          <Form form={registerForm} onFinish={handleРегистрация} layout="vertical" size="large">
+          <Form form={registerForm} onFinish={handleRegister} layout="vertical" size="large">
             <Form.Item name="username" rules={[{ required: true, message: 'Введите имя пользователя' }, { min: 3, message: 'Минимум 3 символа' }]}>
               <Input prefix={<UserOutlined />} placeholder="Имя пользователя" />
             </Form.Item>
