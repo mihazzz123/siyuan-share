@@ -177,6 +177,58 @@ export class S3UploadService {
     }
 
     /**
+     * S3 addressing resolver
+     */
+    private resolveAddressing(): 'path' | 'virtual' {
+        const addr = this.config.addressing || 'auto';
+        if (addr !== 'auto') return addr;
+
+        const endpoint = this.config.endpoint.toLowerCase();
+        // Heuristics for auto:
+        // 1. If endpoint is an IP address or localhost or has a port, use path-style
+        if (/:[0-9]+/.test(endpoint) || /^[0-9.]+$/.test(endpoint.replace(/^https?:\/\//, '')) || endpoint.includes('localhost')) {
+            return 'path';
+        }
+        // 2. If it's not Amazon AWS, many self-hosted services prefer path-style
+        if (!endpoint.includes('amazonaws.com')) {
+            return 'path';
+        }
+        // 3. If bucket name contains dots and using HTTPS, use path-style (AWS requirement)
+        if (this.config.bucket.includes('.') && endpoint.startsWith('https')) {
+            return 'path';
+        }
+
+        return 'virtual';
+    }
+
+    /**
+     * Build S3 request details
+     */
+    private buildS3Request(key: string) {
+        const style = this.resolveAddressing();
+        const endpointRaw = this.config.endpoint.replace(/^https?:\/\//, '').replace(/\/$/, '');
+        const bucket = this.config.bucket;
+        const isHttps = this.config.endpoint.startsWith('https');
+        const protocol = isHttps ? 'https://' : 'http://';
+
+        let url: string;
+        let host: string;
+        let canonicalUri: string;
+
+        if (style === 'path') {
+            url = `${protocol}${endpointRaw}/${bucket}/${key}`;
+            host = endpointRaw;
+            canonicalUri = `/${bucket}/${key.split('/').map(part => encodeURIComponent(part)).join('/')}`;
+        } else {
+            url = `${protocol}${bucket}.${endpointRaw}/${key}`;
+            host = `${bucket}.${endpointRaw}`;
+            canonicalUri = `/${key.split('/').map(part => encodeURIComponent(part)).join('/')}`;
+        }
+
+        return { url, host, canonicalUri };
+    }
+
+    /**
      *  S3 загрузка
      */
     private async performUpload(
@@ -184,12 +236,7 @@ export class S3UploadService {
         s3Key: string,
         onProgress?: UploadProgressCallback
     ): Promise<string> {
-        //  S3 URL
-        const endpoint = this.config.endpoint.replace(/^https?:\/\//, '');
-        const bucket = this.config.bucket;
-        
-        // использование AWS Signature Version 4
-        const url = `https://${bucket}.${endpoint}/${s3Key}`;
+        const { url, host, canonicalUri } = this.buildS3Request(s3Key);
         
         //  provider генерация
         const contentType = file.type || this.guessContentType(file.name);
@@ -202,7 +249,9 @@ export class S3UploadService {
                 'PUT',
                 s3Key,
                 contentType,
-                file.size
+                file.size,
+                host,
+                canonicalUri
             );
         }
 
@@ -299,10 +348,7 @@ export class S3UploadService {
         originalHeaders: Record<string, string>,
         onProgress?: UploadProgressCallback
     ): Promise<string> {
-        //  URL （ FormData）
-        const endpoint = this.config.endpoint.replace(/^https?:\/\//, '');
-        const bucket = this.config.bucket;
-        const url = `https://${bucket}.${endpoint}/${s3Key}`;
+        const { url } = this.buildS3Request(s3Key);
 
         // файл；forwardProxy ：url, method, headers, payload(base64)
         const arrayBuf = await file.arrayBuffer();
@@ -368,10 +414,7 @@ export class S3UploadService {
      *  S3 Удалить
      */
     private async performDelete(s3Key: string): Promise<void> {
-        //  S3 URL
-        const endpoint = this.config.endpoint.replace(/^https?:\/\//, '');
-        const bucket = this.config.bucket;
-        const url = `https://${bucket}.${endpoint}/${s3Key}`;
+        const { url, host, canonicalUri } = this.buildS3Request(s3Key);
         
         const provider = this.config.provider || 'aws';
         let headers: Record<string, string>;
@@ -382,7 +425,9 @@ export class S3UploadService {
                 'DELETE',
                 s3Key,
                 '',
-                0
+                0,
+                host,
+                canonicalUri
             );
         }
 
@@ -423,21 +468,16 @@ export class S3UploadService {
         method: string,
         key: string,
         contentType: string,
-        contentLength: number
+        contentLength: number,
+        host: string,
+        canonicalUri: string
     ): Promise<Record<string, string>> {
         const now = new Date();
         const dateStamp = this.formatDateStamp(now);
         const amzDate = this.formatAmzDate(now);
-        const endpoint = this.config.endpoint.replace(/^https?:\/\//, '');
-        const bucket = this.config.bucket;
-        //  AWS Signature V4 ，Host （просмотр Host，Настройки）
-        const host = `${bucket}.${endpoint}`;
 
         //  1: создание
         const payloadHash = 'UNSIGNED-PAYLOAD';
-        
-        //  URI（）
-        const canonicalUri = '/' + key.split('/').map(part => encodeURIComponent(part)).join('/');
         
         // （）
         const canonicalQueryString = '';
