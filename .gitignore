@@ -1,0 +1,12 @@
+.idea
+node_modules
+.DS_Store
+.eslintcache
+dist
+package.zip
+index.css
+index.js
+backend/.task
+backend/build
+i18n/
+.env

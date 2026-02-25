@@ -1,0 +1,38 @@
+{
+  "name": "siyuan-share",
+  "author": "Zero",
+  "url": "https://github.com/ZeroHawkeye/siyuan-share",
+  "version": "0.0.2",
+  "minAppVersion": "3.3.0",
+  "backends": [
+    "all"
+  ],
+  "frontends": [
+    "all"
+  ],
+  "disabledInPublish": false,
+  "displayName": {
+    "default": "Siyuan Share",
+    "zh_CN": "思源分享"
+  },
+  "description": {
+    "default": "Publish selected SiYuan documents or blocks to a public URL for quick viewing and collaboration.",
+    "zh_CN": "将选择的思源笔记文档或块发布为公网可访问链接，便于快速查看与协作。"
+  },
+  "readme": {
+    "default": "README.md",
+    "zh_CN": "README_zh_CN.md"
+  },
+  "funding": {
+    "openCollective": "",
+    "patreon": "",
+    "github": "",
+    "custom": [
+      "https://ld246.com/sponsor"
+    ]
+  },
+  "keywords": [
+    "online sharing",
+    "在线分享"
+  ]
+}

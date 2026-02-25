@@ -1,0 +1,54 @@
+/* Современный интерфейс в стиле Apple */
+.home-container {
+  max-width: 680px;
+  margin: 60px auto;
+  padding: 0 24px;
+}
+
+.home-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.home-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04), 0 1px 4px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+}
+
+.home-card .ant-card-body {
+  padding: 32px;
+}
+
+.usage-card {
+  background: #f9fafb;
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+.usage-card .ant-card-body {
+  padding: 24px;
+}
+
+/* Оптимизация вкладок Ant Design */
+.home-card .ant-tabs-nav {
+  margin-bottom: 0;
+}
+
+.home-card .ant-tabs-tab {
+  font-weight: 500;
+  font-size: 15px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .home-container {
+    margin: 32px auto;
+    padding: 0 16px;
+  }
+  
+  .home-card .ant-card-body {
+    padding: 20px;
+  }
+}

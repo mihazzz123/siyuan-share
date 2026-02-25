@@ -1,0 +1,50 @@
+version: "3"
+tasks:
+  build:web:
+    cmds:
+      - cd web
+      - npm run build
+    desc: "前端编译"
+  copy:web:
+    cmds:
+      # 先删除apiоглавлениепод的distоглавление
+      - powershell -Command "if (Test-Path 'api/dist') { Remove-Item -Path 'api/dist' -Recurse -Force }"
+      # powershell命令复制файл夹
+      - powershell -Command "Copy-Item -Path 'web/dist' -Destination 'api' -Recurse -Force"
+    desc: "复制前端статическийфайл到后端"
+  build:linux:
+    # 执行оглавление
+    dir: api
+    env:
+      GOOS: linux
+    cmds:
+      - task: build:web
+      - task: copy:web
+      - go build -o siyuan-share .
+    desc: "编译linux后端"
+  build:windows:
+    # 执行оглавление
+    dir: api
+    env:
+      GOOS: windows
+    cmds:
+      - task: build:web
+      - task: copy:web
+      - go build -o siyuan-share.exe .
+    desc: "编译windows后端"
+  build:all:
+    # 执行оглавление
+    dir: api
+    env:
+      GOOS: windows
+    cmds:
+      - task: build:web
+      - task: copy:web
+      - task: build:linux
+      - task: build:windows
+      # 创建buildоглавление（如果не существует）
+      - powershell -Command "if (-not (Test-Path '../build')) { New-Item -Path '../build' -ItemType Directory -Force }"
+      # 移动编译产物到buildоглавление
+      - powershell -Command "Move-Item -Path 'siyuan-share' -Destination '../build/siyuan-share' -Force"
+      - powershell -Command "Move-Item -Path 'siyuan-share.exe' -Destination '../build/siyuan-share.exe' -Force"
+    desc: "编译所有内容"

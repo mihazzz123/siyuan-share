@@ -1,0 +1,525 @@
+.share-view {
+  min-height: 100vh;
+  background: #f5f5f5;
+  --share-anchor-offset: 72px;
+}
+
+.share-layout {
+  min-height: 100vh;
+  background: #fff;
+}
+
+/* статусы загрузки и ошибок */
+.share-view-loading,
+.share-view-error,
+.share-view-password {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  text-align: center;
+}
+
+.share-view-error .ant-result {
+  padding: 48px 32px;
+}
+
+.share-view-error .ant-result-icon {
+  margin-bottom: 24px;
+}
+
+.share-view-error .ant-result-icon > .anticon {
+  font-size: 72px;
+}
+
+.share-view-error .ant-result-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.share-view-error .error-subtitle {
+  font-size: 16px;
+  margin-bottom: 24px;
+}
+
+.share-view-error .ant-result-extra {
+  margin-top: 32px;
+}
+
+.share-view-error .ant-btn {
+  height: 40px;
+  padding: 0 24px;
+  font-size: 16px;
+  border-radius: 6px;
+}
+
+.share-view-error .ant-btn + .ant-btn {
+  margin-left: 12px;
+}
+
+.password-card {
+  max-width: 400px;
+  width: 100%;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.password-card form {
+  margin-top: 1.5rem;
+}
+
+/* Кнопка оглавления для мобильных */
+.mobile-toc-button {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 999;
+  display: none;
+  border-radius: 50% !important;
+  width: 56px !important;
+  height: 56px !important;
+  min-width: 56px !important;
+  padding: 0 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+/* Кнопка Наверх */
+.back-to-top-button {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999;
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-to-top-button:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.back-to-top-button .anticon {
+  font-size: 18px;
+}
+
+/* Боковая панель ПК */
+.desktop-toc-sider {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background: #fafafa !important;
+  border-right: 1px solid #f0f0f0;
+}
+
+.toc-wrapper {
+  padding: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.toc-wrapper h5 {
+  margin: 0;
+  padding: 24px 16px 16px;
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.toc-wrapper .ant-anchor {
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Область контента */
+.share-content-wrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 24px 24px;
+  background: #fff;
+}
+
+.share-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 32px 24px 24px;
+  margin-bottom: 32px;
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+.share-header.shrink {
+  padding: 8px 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.share-header h1 {
+  margin-bottom: 16px;
+  font-size: 2.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.share-header.shrink h1 {
+  font-size: 1.25rem;
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+.share-meta {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  opacity: 1;
+  max-height: 100px;
+  overflow: hidden;
+}
+
+.share-header.shrink .share-meta {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+}
+
+/* Стили контента Markdown */
+.share-content {
+  padding: 0;
+  margin-bottom: 48px;
+}
+
+.markdown-body {
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+/* Убедиться, что параграфы и ссылки находятся поверх псевдоэлементов заголовков */
+.markdown-body p {
+  position: relative;
+  z-index: 10;
+}
+
+.markdown-body a {
+  position: relative;
+  z-index: 10;
+}
+
+/* Оптимизация стилей якорей заголовков */
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  position: relative;
+  scroll-margin-top: var(--share-anchor-offset, 72px);
+}
+
+/* Оптимизация блоков кода */
+.code-block-wrapper {
+  position: relative;
+  margin: 16px 0;
+}
+
+.code-block-wrapper pre {
+  margin: 0;
+}
+
+.copy-code-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.65);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+}
+
+.code-block-wrapper:hover .copy-code-btn {
+  opacity: 1;
+}
+
+.copy-code-btn:hover {
+  background: #fff;
+  color: #1890ff;
+  border-color: #1890ff;
+}
+
+.copy-code-btn.copied {
+  color: #52c41a;
+  border-color: #52c41a;
+}
+
+.markdown-body pre {
+  background-color: #f6f8fa;
+  border-radius: 6px;
+  padding: 16px;
+  overflow-x: auto;
+}
+
+.markdown-body code {
+  background-color: rgba(175, 184, 193, 0.2);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+.markdown-body pre code {
+  background: none;
+  padding: 0;
+  font-size: 14px;
+}
+
+/* Подвал */
+.share-footer {
+  text-align: center;
+  padding: 24px 0;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 768px) {
+  .mobile-toc-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    bottom: 90px;
+  }
+
+  .back-to-top-button {
+    bottom: 24px;
+    right: 24px;
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+  .share-view {
+    --share-anchor-offset: 56px;
+  }
+
+  .desktop-toc-sider {
+    display: none;
+  }
+
+  .share-content-wrapper {
+    padding: 0 16px 16px;
+  }
+
+  .share-header {
+    padding: 24px 16px 16px;
+  }
+
+  .share-header.shrink {
+    padding: 6px 16px;
+  }
+
+  .share-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .share-header.shrink h1 {
+    font-size: 1.1rem;
+  }
+
+  .share-meta {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .markdown-body {
+    font-size: 15px;
+  }
+
+  .markdown-body pre {
+    font-size: 13px;
+  }
+
+  /* Оптимизация страницы ошибок для мобильных */
+  .share-view-error .ant-result {
+    padding: 32px 16px;
+  }
+
+  .share-view-error .ant-result-icon > .anticon {
+    font-size: 56px;
+  }
+
+  .share-view-error .ant-result-title {
+    font-size: 20px;
+  }
+
+  .share-view-error .error-subtitle {
+    font-size: 14px;
+  }
+
+  .share-view-error .ant-btn {
+    height: 36px;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+
+  .share-view-error .ant-result-extra {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .share-view-error .ant-btn + .ant-btn {
+    margin-left: 0;
+  }
+}
+
+/* Адаптация для планшетов */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .desktop-toc-sider {
+    width: 200px !important;
+    min-width: 200px !important;
+  }
+
+  .share-content-wrapper {
+    padding: 20px;
+  }
+}
+
+/* Темная тема */
+@media (prefers-color-scheme: dark) {
+  .share-view {
+    background: #141414;
+  }
+
+  .share-layout {
+    background: #1f1f1f;
+  }
+
+  .desktop-toc-sider {
+    background: #141414 !important;
+    border-right-color: #303030;
+  }
+
+  .toc-wrapper h5 {
+    background: #141414;
+    border-bottom-color: #303030;
+  }
+
+  .copy-code-btn {
+    background: rgba(0, 0, 0, 0.6);
+    border-color: #434343;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .copy-code-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+    color: #40a9ff;
+    border-color: #40a9ff;
+  }
+
+  .copy-code-btn.copied {
+    color: #73d13d;
+    border-color: #73d13d;
+  }
+
+  .share-content-wrapper {
+    background: #1f1f1f;
+  }
+
+  .share-header {
+    background: #1f1f1f;
+  }
+
+  .share-header.shrink {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .password-card {
+    background: #1f1f1f;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+  }
+
+  .share-view-error .ant-result-icon > .anticon {
+    color: rgba(255, 255, 255, 0.65);
+  }
+
+  .share-view-error .ant-result-title {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .share-header {
+    border-bottom-color: #303030;
+  }
+
+  .share-footer {
+    border-top-color: #303030;
+  }
+
+  /* Переопределение темной темы GitHub Markdown */
+  .markdown-body {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .markdown-body h1,
+  .markdown-body h2,
+  .markdown-body h3,
+  .markdown-body h4,
+  .markdown-body h5,
+  .markdown-body h6 {
+    color: rgba(255, 255, 255, 0.85);
+    border-bottom-color: #303030;
+  }
+
+  .markdown-body pre {
+    background-color: #141414;
+  }
+
+  .markdown-body code {
+    background-color: rgba(110, 118, 129, 0.4);
+  }
+
+  .markdown-body table tr {
+    background-color: #1f1f1f;
+    border-top-color: #303030;
+  }
+
+  .markdown-body table th,
+  .markdown-body table td {
+    border-color: #303030;
+  }
+
+  .markdown-body blockquote {
+    color: rgba(255, 255, 255, 0.65);
+    border-left-color: #303030;
+  }
+}
