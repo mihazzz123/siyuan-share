@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"com/mihazzz123/siyuan-share-api/models"
+	"github.com/mihazzz123/siyuan-share/models"
 	"github.com/gin-gonic/gin"
 	jwt "github.com/golang-jwt/jwt/v5"
 )

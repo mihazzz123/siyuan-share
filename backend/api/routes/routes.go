@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"com/mihazzz123/siyuan-share-api/controllers"
-	"com/mihazzz123/siyuan-share-api/middleware"
-	"com/mihazzz123/siyuan-share-api/models"
+	"github.com/mihazzz123/siyuan-share/controllers"
+	"github.com/mihazzz123/siyuan-share/middleware"
+	"github.com/mihazzz123/siyuan-share/models"
 	gz "github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 )

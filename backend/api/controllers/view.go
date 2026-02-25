@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"com/mihazzz123/siyuan-share-api/models"
+	"github.com/mihazzz123/siyuan-share/models"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )

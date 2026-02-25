@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 	"net/http"
 
-	"com/mihazzz123/siyuan-share-api/models"
+	"github.com/mihazzz123/siyuan-share/models"
 	"github.com/gin-gonic/gin"
 )
 

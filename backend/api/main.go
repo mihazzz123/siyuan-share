@@ -5,8 +5,8 @@ import (
 	"log"
 	"os"
 
-	"com/mihazzz123/siyuan-share-api/models"
-	"com/mihazzz123/siyuan-share-api/routes"
+	"github.com/mihazzz123/siyuan-share/models"
+	"github.com/mihazzz123/siyuan-share/routes"
 	"github.com/gin-gonic/gin"
 )
 

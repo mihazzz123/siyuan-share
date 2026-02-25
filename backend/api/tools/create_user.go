@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"log"
 
-	"com/mihazzz123/siyuan-share-api/models"
+	"github.com/mihazzz123/siyuan-share/models"
 	"golang.org/x/crypto/bcrypt"
 )
 
