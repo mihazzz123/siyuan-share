@@ -29,7 +29,7 @@ export const DEFAULT_CONFIG: ShareConfig = {
         accessKeyId: "",
         secretAccessKey: "",
         customDomain: "",
-        pathPrefix: "siyuan-share",
+        pathPrefix: "",
         enablePasteUpload: false,
         provider: 'aws',
     },
