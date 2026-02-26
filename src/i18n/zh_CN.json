@@ -51,6 +51,8 @@
   "settingS3AddressingAuto": "自动",
   "settingS3AddressingPath": "路径样式",
   "settingS3AddressingVirtual": "虚拟主机样式",
+  "settingS3UrlPreview": "S3 URL 预览",
+  "settingS3UrlPreviewDesc": "预览资源文件的 S3 URL 构建方式",
   "settingS3Provider": "S3 提供商",
   "settingS3ProviderDesc": "选择存储提供商：AWS S3 或兼容 (SigV4)，或 OSS (HMAC-SHA1)",
 

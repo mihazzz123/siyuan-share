@@ -13,15 +13,18 @@
   "disabledInPublish": false,
   "displayName": {
     "default": "Siyuan Share",
-    "zh_CN": "思源分享"
+    "zh_CN": "思源分享",
+    "ru_RU": "SiYuan Share"
   },
   "description": {
     "default": "Publish selected SiYuan documents or blocks to a public URL for quick viewing and collaboration.",
-    "zh_CN": "将选择的思源笔记文档或块发布为公网可访问链接，便于快速查看与协作。"
+    "zh_CN": "将选择的思源笔记文档或块发布为公网可访问链接，便于快速查看与协作。",
+    "ru_RU": "Публикуйте выбранные документы или блоки SiYuan в виде общедоступных веб-страниц для совместной работы."
   },
   "readme": {
     "default": "README.md",
-    "zh_CN": "README_zh_CN.md"
+    "zh_CN": "README_zh_CN.md",
+    "ru_RU": "README.md"
   },
   "funding": {
     "openCollective": "",

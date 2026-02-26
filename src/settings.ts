@@ -171,10 +171,48 @@ export class ShareSettings {
         s3PathPrefixInput.placeholder = "siyuan-share";
         s3PathPrefixInput.value = this.config.s3.pathPrefix || "";
 
+        const s3UrlPreviewInput = document.createElement("input");
+        s3UrlPreviewInput.className = "b3-text-field fn__block";
+        s3UrlPreviewInput.readOnly = true;
+        s3UrlPreviewInput.style.backgroundColor = "var(--b3-theme-surface-lighter)";
+        s3UrlPreviewInput.style.cursor = "default";
+
+        const updateUrlPreview = () => {
+            const endpoint = s3EndpointInput.value.trim().replace(/^https?:\/\//, "").replace(/\/$/, "");
+            const bucket = s3BucketInput.value.trim();
+            const addressing = s3AddressingSelect.value;
+            const isHttps = s3EndpointInput.value.trim().startsWith("https");
+            const protocol = isHttps ? "https://" : "http://";
+            
+            if (!endpoint || !bucket) {
+                s3UrlPreviewInput.value = "...";
+                return;
+            }
+
+            let style = addressing;
+            if (style === "auto") {
+                if (/:[0-9]+/.test(endpoint) || /^[0-9.]+$/.test(endpoint) || endpoint.includes("localhost") || !endpoint.includes("amazonaws.com") || bucket.includes(".")) {
+                    style = "path";
+                } else {
+                    style = "virtual";
+                }
+            }
+
+            if (style === "path") {
+                s3UrlPreviewInput.value = `${protocol}${endpoint}/${bucket}/assets/example.png`;
+            } else {
+                s3UrlPreviewInput.value = `${protocol}${bucket}.${endpoint}/assets/example.png`;
+            }
+        };
+
+        s3EndpointInput.addEventListener("input", updateUrlPreview);
+        s3BucketInput.addEventListener("input", updateUrlPreview);
+        s3AddressingSelect.addEventListener("change", updateUrlPreview);
+
         const s3AddressingSelect = document.createElement('select');
         s3AddressingSelect.className = 'b3-select fn__block';
         const addressings: Array<{val:'auto'|'path'|'virtual'; text:string}> = [
-            { val: 'auto', text: this.plugin.i18n.settingS3AddressingAuto || 'Auto' },
+            { val: 'auto', text: this.plugin.i18n.settingS3AddressingAuto || 'Авто' },
             { val: 'path', text: this.plugin.i18n.settingS3AddressingPath || 'Path-style' },
             { val: 'virtual', text: this.plugin.i18n.settingS3AddressingVirtual || 'Virtual-host style' },
         ];
@@ -223,11 +261,21 @@ export class ShareSettings {
             createActionElement: () => s3AddressingSelect,
         });
 
-        //  S3 метка provider 
+        // S3 Provider 
         setting.addItem({
-            title: 'S3 Provider ',
-            description: 'использованиехранение： AWS S3 ， или  OSS（использование）',
+            title: this.plugin.i18n.settingS3Provider || 'S3 Provider',
+            description: this.plugin.i18n.settingS3ProviderDesc || 'AWS S3 (SigV4) или OSS (HMAC-SHA1)',
             createActionElement: () => s3ProviderSelect,
+        });
+
+        // S3 URL Preview
+        setting.addItem({
+            title: this.plugin.i18n.settingS3UrlPreview || 'S3 URL Preview',
+            description: this.plugin.i18n.settingS3UrlPreviewDesc || 'Preview how the S3 URL will look',
+            createActionElement: () => {
+                updateUrlPreview();
+                return s3UrlPreviewInput;
+            },
         });
 
         return setting;
@@ -265,10 +313,10 @@ export class ShareSettings {
             createActionElement: () => apiTokenInput,
         });
 
-        // SiYuanядро Token
+        // SiYuan Kernel Token
         setting.addItem({
-            title: this.plugin.i18n.settingSiyuanToken || "SiYuanядро Token",
-            description: this.plugin.i18n.settingSiyuanTokenDesc || "дляSiYuanвнутри API аутентификациятокен（Настройки -> о программе -> API token）",
+            title: this.plugin.i18n.settingSiyuanToken || "Токен ядра SiYuan",
+            description: this.plugin.i18n.settingSiyuanTokenDesc || "Токен аутентификации для внутреннего API SiYuan (Настройки -> О программе -> API token)",
             createActionElement: () => siyuanTokenInput,
         });
 
@@ -437,8 +485,8 @@ export class ShareSettings {
         logExportWrapper.appendChild(clearBtn);
 
         setting.addItem({
-            title: '🔍 ',
-            description: 'под、просмотр или плагин（Ошибка、загрузка，доступно）。',
+            title: '🔍 Логи',
+            description: 'Просмотр и экспорт логов плагина для отладки (ошибки, загрузки).',
             createActionElement: () => logExportWrapper,
         });
     }
@@ -463,17 +511,17 @@ export class ShareSettings {
                 return element;
             },
         });
-        //  S3
+        // S3 
         setting.addItem({
-            title: this.plugin.i18n.settingS3Enabled || " S3 хранение",
-            description: this.plugin.i18n.settingS3EnabledDesc || "загрузка S3 хранение，поделитьсядоступ",
+            title: this.plugin.i18n.settingS3Enabled || "Включить S3 хранилище",
+            description: this.plugin.i18n.settingS3EnabledDesc || "Загрузка в S3 хранилище для ускорения доступа",
             createActionElement: () => s3EnabledCheckbox,
         });
 
-        // загрузка
+        // Paste Upload
         setting.addItem({
-            title: this.plugin.i18n.settingS3PasteUpload || "загрузка",
-            description: this.plugin.i18n.settingS3PasteUploadDesc || "использование，файлзагрузка S3 ссылка（ S3 доступ）",
+            title: this.plugin.i18n.settingS3PasteUpload || "Загрузка при вставке",
+            description: this.plugin.i18n.settingS3PasteUploadDesc || "Автоматическая загрузка файлов в S3 при вставке из буфера обмена",
             createActionElement: () => s3PasteUploadCheckbox,
         });
 
@@ -485,45 +533,45 @@ export class ShareSettings {
             createActionElement: () => s3EndpointInput,
         });
 
-        // S3 
+        // S3 Region
         setting.addItem({
-            title: this.plugin.i18n.settingS3Region || " (Region)",
-            description: this.plugin.i18n.settingS3RegionDesc || "хранение， us-east-1",
+            title: this.plugin.i18n.settingS3Region || "Регион (Region)",
+            description: this.plugin.i18n.settingS3RegionDesc || "Например: us-east-1",
             createActionElement: () => s3RegionInput,
         });
 
-        // S3 хранение
+        // S3 Bucket
         setting.addItem({
-            title: this.plugin.i18n.settingS3Bucket || "хранение (Bucket)",
-            description: this.plugin.i18n.settingS3BucketDesc || "дляхранениеподелитьсяресурсхранение",
+            title: this.plugin.i18n.settingS3Bucket || "Бакет (Bucket)",
+            description: this.plugin.i18n.settingS3BucketDesc || "Имя бакета для хранения ресурсов",
             createActionElement: () => s3BucketInput,
         });
 
         // Access Key ID
         setting.addItem({
             title: this.plugin.i18n.settingS3AccessKey || "Access Key ID",
-            description: this.plugin.i18n.settingS3AccessKeyDesc || "S3 доступключ ID（Сохранитьлокальный компьютер）",
+            description: this.plugin.i18n.settingS3AccessKeyDesc || "ID ключа доступа S3 (хранится локально)",
             createActionElement: () => s3AccessKeyInput,
         });
 
         // Secret Access Key
         setting.addItem({
             title: this.plugin.i18n.settingS3SecretKey || "Secret Access Key",
-            description: this.plugin.i18n.settingS3SecretKeyDesc || "S3 доступключ（Сохранитьлокальный компьютер）",
+            description: this.plugin.i18n.settingS3SecretKeyDesc || "Секретный ключ доступа S3 (хранится локально)",
             createActionElement: () => s3SecretKeyInput,
         });
 
-        // пользовательскийдомен
+        // Custom Domain
         setting.addItem({
-            title: this.plugin.i18n.settingS3CustomDomain || "пользовательский CDN домен",
-            description: this.plugin.i18n.settingS3CustomDomainDesc || "，использованиепользовательскийдомендоступресурс， https://cdn.example.com",
+            title: this.plugin.i18n.settingS3CustomDomain || "Пользовательский CDN домен",
+            description: this.plugin.i18n.settingS3CustomDomainDesc || "Использовать свой домен для доступа, например: https://cdn.example.com",
             createActionElement: () => s3CustomDomainInput,
         });
 
-        // путьпрефикс
+        // Path Prefix
         setting.addItem({
-            title: this.plugin.i18n.settingS3PathPrefix || "путьпрефикс",
-            description: this.plugin.i18n.settingS3PathPrefixDesc || "хранениеобъектовпутьпрефикс，длягруппаструктурыфайлструктура",
+            title: this.plugin.i18n.settingS3PathPrefix || "Префикс пути",
+            description: this.plugin.i18n.settingS3PathPrefixDesc || "Префикс пути для организации файлов в хранилище",
             createActionElement: () => s3PathPrefixInput,
         });
     }

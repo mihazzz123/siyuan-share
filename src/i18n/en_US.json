@@ -51,6 +51,8 @@
   "settingS3AddressingAuto": "Auto",
   "settingS3AddressingPath": "Path-style",
   "settingS3AddressingVirtual": "Virtual-host style",
+  "settingS3UrlPreview": "S3 URL Preview",
+  "settingS3UrlPreviewDesc": "Preview how the S3 URL will be constructed for assets",
   "settingS3Provider": "S3 Provider",
   "settingS3ProviderDesc": "Select storage provider: AWS S3 or compatible (SigV4), or OSS (HMAC-SHA1)",
 
