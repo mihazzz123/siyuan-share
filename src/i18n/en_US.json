@@ -155,6 +155,8 @@
   "assetListDeleteFilteredSuccess": "Batch deletion successful",
   "assetListDeleteFilteredError": "Batch deletion failed",
   "assetListNoFilteredAssets": "No assets match the filter",
+  "settingTabServer": "Server",
+  "settingTabS3": "S3 Storage",
   "delete": "Delete",
   "deleting": "Deleting...",
   "confirmDelete": "Confirm delete"

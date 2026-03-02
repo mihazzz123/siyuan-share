@@ -155,6 +155,8 @@
   "assetListDeleteFilteredSuccess": "Массовое удаление выполнено успешно",
   "assetListDeleteFilteredError": "Ошибка массового удаления",
   "assetListNoFilteredAssets": "Нет ресурсов, соответствующих фильтру",
+  "settingTabServer": "Сервер",
+  "settingTabS3": "S3 Хранилище",
   "delete": "Удалить",
   "deleting": "Удаление...",
   "confirmDelete": "Подтвердить удаление"

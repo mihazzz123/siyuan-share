@@ -31,7 +31,7 @@ export const DEFAULT_CONFIG: ShareConfig = {
         customDomain: "",
         pathPrefix: "",
         enablePasteUpload: false,
-        provider: 'aws',
+        provider: "aws",
     },
 };
 
@@ -73,7 +73,32 @@ export class ShareSettings {
     }
 
     createSettingPanel(): Setting {
-        // созданиеэлемент
+        const setting = new Setting({
+            confirmCallback: async () => {
+                this.config.serverUrl = serverUrlInput.value.trim();
+                this.config.apiToken = apiTokenInput.value.trim();
+                this.config.siyuanToken = siyuanTokenInput.value.trim();
+                this.config.defaultPassword = defaultPasswordCheckbox.checked;
+                this.config.defaultExpireDays = parseInt(defaultExpireInput.value) || 7;
+                this.config.defaultPublic = defaultPublicCheckbox.checked;
+                
+                this.config.s3.enabled = s3EnabledCheckbox.checked;
+                this.config.s3.enablePasteUpload = s3PasteUploadCheckbox.checked;
+                this.config.s3.endpoint = s3EndpointInput.value.trim();
+                this.config.s3.region = s3RegionInput.value.trim();
+                this.config.s3.bucket = s3BucketInput.value.trim();
+                this.config.s3.accessKeyId = s3AccessKeyInput.value.trim();
+                this.config.s3.secretAccessKey = s3SecretKeyInput.value.trim();
+                this.config.s3.customDomain = s3CustomDomainInput.value.trim();
+                this.config.s3.pathPrefix = s3PathPrefixInput.value.trim();
+                this.config.s3.provider = (s3ProviderSelect.value as ('aws'|'oss')) || 'aws';
+                this.config.s3.addressing = (s3AddressingSelect.value as ('auto'|'path'|'virtual')) || 'auto';
+                
+                await this.save();
+            }
+        });
+
+        // Создаем элементы ввода
         const serverUrlInput = document.createElement("input");
         serverUrlInput.className = "b3-text-field fn__block";
         serverUrlInput.placeholder = "https://share.example.com";
@@ -108,7 +133,7 @@ export class ShareSettings {
         defaultPublicCheckbox.className = "b3-switch fn__flex-center";
         defaultPublicCheckbox.checked = this.config.defaultPublic;
 
-        // S3 конфигурацияэлемент
+        // S3 элементы
         const s3EnabledCheckbox = document.createElement("input");
         s3EnabledCheckbox.type = "checkbox";
         s3EnabledCheckbox.className = "b3-switch fn__flex-center";
@@ -124,12 +149,11 @@ export class ShareSettings {
         s3EndpointInput.placeholder = "s3.amazonaws.com";
         s3EndpointInput.value = this.config.s3.endpoint;
 
-        // provider （aws / oss）
         const s3ProviderSelect = document.createElement('select');
         s3ProviderSelect.className = 'b3-select fn__block';
         const providers: Array<{val:'aws'|'oss';text:string}> = [
-            { val: 'aws', text: 'AWS /  (SigV4)' },
-            { val: 'oss', text: ' OSS (HMAC-SHA1)' },
+            { val: 'aws', text: 'AWS / S3 compatible (SigV4)' },
+            { val: 'oss', text: 'Aliyun OSS (HMAC-SHA1)' },
         ];
         for (const p of providers) {
             const opt = document.createElement('option');
@@ -171,44 +195,6 @@ export class ShareSettings {
         s3PathPrefixInput.placeholder = "siyuan-share";
         s3PathPrefixInput.value = this.config.s3.pathPrefix || "";
 
-        const s3UrlPreviewInput = document.createElement("input");
-        s3UrlPreviewInput.className = "b3-text-field fn__block";
-        s3UrlPreviewInput.readOnly = true;
-        s3UrlPreviewInput.style.backgroundColor = "var(--b3-theme-surface-lighter)";
-        s3UrlPreviewInput.style.cursor = "default";
-
-        const updateUrlPreview = () => {
-            const endpoint = s3EndpointInput.value.trim().replace(/^https?:\/\//, "").replace(/\/$/, "");
-            const bucket = s3BucketInput.value.trim();
-            const addressing = s3AddressingSelect.value;
-            const isHttps = s3EndpointInput.value.trim().startsWith("https");
-            const protocol = isHttps ? "https://" : "http://";
-            
-            if (!endpoint || !bucket) {
-                s3UrlPreviewInput.value = "...";
-                return;
-            }
-
-            let style = addressing;
-            if (style === "auto") {
-                if (/:[0-9]+/.test(endpoint) || /^[0-9.]+$/.test(endpoint) || endpoint.includes("localhost") || !endpoint.includes("amazonaws.com") || bucket.includes(".")) {
-                    style = "path";
-                } else {
-                    style = "virtual";
-                }
-            }
-
-            if (style === "path") {
-                s3UrlPreviewInput.value = `${protocol}${endpoint}/${bucket}/assets/example.png`;
-            } else {
-                s3UrlPreviewInput.value = `${protocol}${bucket}.${endpoint}/assets/example.png`;
-            }
-        };
-
-        s3EndpointInput.addEventListener("input", updateUrlPreview);
-        s3BucketInput.addEventListener("input", updateUrlPreview);
-        s3AddressingSelect.addEventListener("change", updateUrlPreview);
-
         const s3AddressingSelect = document.createElement('select');
         s3AddressingSelect.className = 'b3-select fn__block';
         const addressings: Array<{val:'auto'|'path'|'virtual'; text:string}> = [
@@ -224,118 +210,92 @@ export class ShareSettings {
             s3AddressingSelect.appendChild(opt);
         }
 
-        const setting = new Setting({
-            confirmCallback: async () => {
-                // Сохранитьконфигурация
-                this.config.serverUrl = serverUrlInput.value.trim();
-                this.config.apiToken = apiTokenInput.value.trim();
-                this.config.siyuanToken = siyuanTokenInput.value.trim();
-                this.config.defaultPassword = defaultPasswordCheckbox.checked;
-                this.config.defaultExpireDays = parseInt(defaultExpireInput.value) || 7;
-                this.config.defaultPublic = defaultPublicCheckbox.checked;
-                
-                // Сохранить S3 конфигурация
-                this.config.s3.enabled = s3EnabledCheckbox.checked;
-                this.config.s3.enablePasteUpload = s3PasteUploadCheckbox.checked;
-                this.config.s3.endpoint = s3EndpointInput.value.trim();
-                this.config.s3.region = s3RegionInput.value.trim();
-                this.config.s3.bucket = s3BucketInput.value.trim();
-                this.config.s3.accessKeyId = s3AccessKeyInput.value.trim();
-                this.config.s3.secretAccessKey = s3SecretKeyInput.value.trim();
-                this.config.s3.customDomain = s3CustomDomainInput.value.trim();
-                this.config.s3.pathPrefix = s3PathPrefixInput.value.trim();
-                this.config.s3.provider = (s3ProviderSelect.value as ('aws'|'oss')) || 'aws';
-                this.config.s3.addressing = (s3AddressingSelect.value as ('auto'|'path'|'virtual')) || 'auto';
-                
-                await this.save();
+        const s3UrlPreviewInput = document.createElement("input");
+        s3UrlPreviewInput.className = "b3-text-field fn__block";
+        s3UrlPreviewInput.readOnly = true;
+        s3UrlPreviewInput.style.backgroundColor = "var(--b3-theme-surface-lighter)";
+        s3UrlPreviewInput.style.cursor = "default";
+
+        const updateUrlPreview = () => {
+            const endpoint = s3EndpointInput.value.trim().replace(/\/$/, "");
+            const bucket = s3BucketInput.value.trim();
+            const addressing = s3AddressingSelect.value;
+            const customDomain = s3CustomDomainInput.value.trim().replace(/\/$/, "");
+            const prefix = s3PathPrefixInput.value.trim().replace(/\/$/, "");
+
+            if (customDomain) {
+                s3UrlPreviewInput.value = `${customDomain}/${prefix ? prefix + "/" : ""}example.png`;
+                return;
             }
-        });
-        // 
-        this.addGeneralTab(setting, serverUrlInput, apiTokenInput, siyuanTokenInput, defaultPasswordCheckbox, defaultExpireInput, defaultPublicCheckbox);
-        this.addS3Tab(setting, s3EnabledCheckbox, s3PasteUploadCheckbox, s3EndpointInput, s3RegionInput, s3BucketInput, s3AccessKeyInput, s3SecretKeyInput, s3CustomDomainInput, s3PathPrefixInput);
-        
-        // S3 Addressing Style
+
+            if (!endpoint || !bucket) {
+                s3UrlPreviewInput.value = "https://...";
+                return;
+            }
+
+            const protocol = endpoint.startsWith("http") ? "" : "https://";
+            const cleanEndpoint = endpoint.replace(/^https?:\/\//, "");
+
+            if (addressing === "path") {
+                s3UrlPreviewInput.value = `${protocol}${endpoint}/${bucket}/${prefix ? prefix + "/" : ""}example.png`;
+            } else if (addressing === "virtual") {
+                s3UrlPreviewInput.value = `${protocol}${bucket}.${cleanEndpoint}/${prefix ? prefix + "/" : ""}example.png`;
+            } else {
+                // Auto - same logic as in s3-upload.ts
+                let style = "virtual";
+                if (/:[0-9]+/.test(cleanEndpoint) || /^[0-9.]+$/.test(cleanEndpoint) || cleanEndpoint.includes("localhost") || !cleanEndpoint.includes("amazonaws.com") || bucket.includes(".")) {
+                    style = "path";
+                }
+                if (style === "path") {
+                    s3UrlPreviewInput.value = `${protocol}${endpoint}/${bucket}/${prefix ? prefix + "/" : ""}example.png`;
+                } else {
+                    s3UrlPreviewInput.value = `${protocol}${bucket}.${cleanEndpoint}/${prefix ? prefix + "/" : ""}example.png`;
+                }
+            }
+        };
+
+        s3EndpointInput.oninput = updateUrlPreview;
+        s3BucketInput.oninput = updateUrlPreview;
+        s3AddressingSelect.onchange = updateUrlPreview;
+        s3CustomDomainInput.oninput = updateUrlPreview;
+        s3PathPrefixInput.oninput = updateUrlPreview;
+
+        // Добавляем элементы в панель
         setting.addItem({
-            title: this.plugin.i18n.settingS3Addressing || 'S3 Addressing Style',
-            description: this.plugin.i18n.settingS3AddressingDesc || 'Path-style (domain.com/bucket) or Virtual-host style (bucket.domain.com)',
-            createActionElement: () => s3AddressingSelect,
+            title: "⚙️ " + (this.plugin.i18n.settingTabGeneral || "Основные настройки"),
+            createActionElement: () => document.createElement("div"),
         });
 
-        // S3 Provider 
-        setting.addItem({
-            title: this.plugin.i18n.settingS3Provider || 'S3 Provider',
-            description: this.plugin.i18n.settingS3ProviderDesc || 'AWS S3 (SigV4) или OSS (HMAC-SHA1)',
-            createActionElement: () => s3ProviderSelect,
-        });
-
-        // S3 URL Preview
-        setting.addItem({
-            title: this.plugin.i18n.settingS3UrlPreview || 'S3 URL Preview',
-            description: this.plugin.i18n.settingS3UrlPreviewDesc || 'Preview how the S3 URL will look',
-            createActionElement: () => {
-                updateUrlPreview();
-                return s3UrlPreviewInput;
-            },
-        });
-
-        return setting;
-    }
-
-    private addGeneralTab(
-        setting: Setting,
-        serverUrlInput: HTMLInputElement,
-        apiTokenInput: HTMLInputElement,
-        siyuanTokenInput: HTMLInputElement,
-        defaultPasswordCheckbox: HTMLInputElement,
-        defaultExpireInput: HTMLInputElement,
-        defaultPublicCheckbox: HTMLInputElement
-    ): void {
-        // созданиеНастройкиметка
-        setting.addItem({
-            title: "⚙️ " + (this.plugin.i18n.settingTabGeneral || "Настройки"),
-            createActionElement: () => {
-                const element = document.createElement("div");
-                return element;
-            },
-        });
-        
-        //  URL
         setting.addItem({
             title: this.plugin.i18n.settingServerUrl,
             description: this.plugin.i18n.settingServerUrlDesc,
             createActionElement: () => serverUrlInput,
         });
 
-        // API Token
         setting.addItem({
             title: this.plugin.i18n.settingApiToken,
             description: this.plugin.i18n.settingApiTokenDesc,
             createActionElement: () => apiTokenInput,
         });
 
-        // SiYuan Kernel Token
         setting.addItem({
             title: this.plugin.i18n.settingSiyuanToken || "Токен ядра SiYuan",
             description: this.plugin.i18n.settingSiyuanTokenDesc || "Токен аутентификации для внутреннего API SiYuan (Настройки -> О программе -> API token)",
             createActionElement: () => siyuanTokenInput,
         });
 
-        // тестподключениякнопка
         const testButton = document.createElement("button");
         testButton.className = "b3-button b3-button--outline fn__block";
         testButton.textContent = this.plugin.i18n.settingTestConnection;
-        testButton.addEventListener("click", async () => {
+        testButton.onclick = async () => {
             testButton.disabled = true;
             testButton.textContent = this.plugin.i18n.testConnectionTesting;
-            
             try {
-                // использованиетекущийтест,не являетсяСохранитьконфигурация
-                const testConfig = {
+                const result = await this.testConnection({
                     serverUrl: serverUrlInput.value.trim(),
                     apiToken: apiTokenInput.value.trim(),
                     siyuanToken: siyuanTokenInput.value.trim(),
-                };
-                const result = await this.testConnection(testConfig);
+                });
                 if (result.success) {
                     this.plugin.showMessage(this.plugin.i18n.testConnectionSuccess + "\n" + result.message, 4000);
                 } else {
@@ -347,7 +307,7 @@ export class ShareSettings {
                 testButton.disabled = false;
                 testButton.textContent = this.plugin.i18n.settingTestConnection;
             }
-        });
+        };
 
         setting.addItem({
             title: this.plugin.i18n.settingTestConnection,
@@ -355,225 +315,168 @@ export class ShareSettings {
             createActionElement: () => testButton,
         });
 
-        // Защита паролем
         setting.addItem({
             title: this.plugin.i18n.settingDefaultPassword,
             description: this.plugin.i18n.settingDefaultPasswordDesc,
             createActionElement: () => defaultPasswordCheckbox,
         });
 
-        // （）
         setting.addItem({
             title: this.plugin.i18n.settingDefaultExpire,
             description: this.plugin.i18n.settingDefaultExpireDesc,
             createActionElement: () => defaultExpireInput,
         });
 
-        // публичныйподелиться
         setting.addItem({
             title: this.plugin.i18n.settingDefaultPublic,
             description: this.plugin.i18n.settingDefaultPublicDesc,
             createActionElement: () => defaultPublicCheckbox,
         });
 
-        // просмотрвсеподелитьсякнопка
-        const viewSharesButton = document.createElement("button");
-        viewSharesButton.className = "b3-button b3-button--outline fn__block";
-        viewSharesButton.innerHTML = `
-            <svg class="b3-button__icon"><use xlink:href="#iconShare"></use></svg>
-            ${this.plugin.i18n.shareListTitle || "всеподелиться"}
-        `;
-        viewSharesButton.addEventListener("click", async () => {
-            // проверкаконфигурация
-            if (!this.isConfigured()) {
-                this.plugin.showMessage(
-                    this.plugin.i18n.shareErrorNotConfigured || "конфигурация",
-                    3000,
-                    "error"
-                );
-                return;
-            }
-            
-            // поделитьсядиалог
-            const shareListDialog = new ShareListDialog(this.plugin);
-            await shareListDialog.show();
+        setting.addItem({
+            title: "☁️ " + (this.plugin.i18n.settingTabS3 || "S3 хранилище"),
+            createActionElement: () => document.createElement("div"),
         });
 
         setting.addItem({
-            title: this.plugin.i18n.shareListTitle || "всеподелиться",
-            description: this.plugin.i18n.shareListViewDesc || "просмотруправлениесозданиеподелитьсяссылка",
-            createActionElement: () => viewSharesButton,
-        });
-
-        // просмотрстатическийресурскнопка
-        const viewAssetsButton = document.createElement("button");
-        viewAssetsButton.className = "b3-button b3-button--outline fn__block";
-        viewAssetsButton.innerHTML = `
-            <svg class="b3-button__icon"><use xlink:href="#iconImage"></use></svg>
-            ${this.plugin.i18n.assetListTitle || "статическийУправление ресурсами"}
-        `;
-        viewAssetsButton.addEventListener("click", async () => {
-            // ресурсдиалог
-            const assetListView = new AssetListView(this.plugin);
-            await assetListView.show();
-        });
-
-        setting.addItem({
-            title: this.plugin.i18n.assetListTitle || "статическийУправление ресурсами",
-            description: this.plugin.i18n.assetListViewDesc || "просмотруправлениезагрузка S3 статическийресурсфайл",
-            createActionElement: () => viewAssetsButton,
-        });
-
-        // подочистка
-        const logExportWrapper = document.createElement('div');
-        logExportWrapper.style.display = 'flex';
-        logExportWrapper.style.flexDirection = 'column';
-        logExportWrapper.style.gap = '8px';
-
-        const downloadBtn = document.createElement('button');
-        downloadBtn.className = 'b3-button b3-button--outline fn__block';
-        downloadBtn.textContent = 'подплагин';
-        downloadBtn.addEventListener('click', () => {
-            const text = this.plugin.getLogsText();
-            if (!text) {
-                this.plugin.showMessage('нетпод', 3000, 'error');
-                return;
-            }
-            try {
-                const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                const ts = new Date();
-                const tsStr = ts.toISOString().replace(/[:.]/g,'-');
-                a.download = `siyuan-share-logs-${tsStr}.txt`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                this.plugin.showMessage('под', 3000, 'info');
-            } catch (e:any) {
-                this.plugin.showMessage('подОшибка: ' + (e?.message||e), 4000, 'error');
-            }
-        });
-
-        const clearBtn = document.createElement('button');
-        clearBtn.className = 'b3-button b3-button--outline fn__block';
-        clearBtn.textContent = '';
-        clearBtn.addEventListener('click', () => {
-            if (!confirm('ОКтекущийкэш？Действиянеобратимо。')) return;
-            this.plugin.clearLogs();
-            this.plugin.showMessage('', 2500, 'info');
-        });
-
-        const previewArea = document.createElement('textarea');
-        previewArea.className = 'b3-text-field fn__block';
-        previewArea.style.height = '120px';
-        previewArea.placeholder = '“Обновить”получениетекущийсодержимое';
-        previewArea.readOnly = true;
-
-        const refreshBtn = document.createElement('button');
-        refreshBtn.className = 'b3-button b3-button--outline fn__block';
-        refreshBtn.textContent = 'Обновить';
-        refreshBtn.addEventListener('click', () => {
-            previewArea.value = this.plugin.getLogsText() || '（）';
-        });
-
-        logExportWrapper.appendChild(refreshBtn);
-        logExportWrapper.appendChild(previewArea);
-        logExportWrapper.appendChild(downloadBtn);
-        logExportWrapper.appendChild(clearBtn);
-
-        setting.addItem({
-            title: '🔍 Логи',
-            description: 'Просмотр и экспорт логов плагина для отладки (ошибки, загрузки).',
-            createActionElement: () => logExportWrapper,
-        });
-    }
-
-    private addS3Tab(
-        setting: Setting,
-        s3EnabledCheckbox: HTMLInputElement,
-        s3PasteUploadCheckbox: HTMLInputElement,
-        s3EndpointInput: HTMLInputElement,
-        s3RegionInput: HTMLInputElement,
-        s3BucketInput: HTMLInputElement,
-        s3AccessKeyInput: HTMLInputElement,
-        s3SecretKeyInput: HTMLInputElement,
-        s3CustomDomainInput: HTMLInputElement,
-        s3PathPrefixInput: HTMLInputElement
-    ): void {
-        // создание S3 Настройкиметка
-        setting.addItem({
-            title: "☁️ " + (this.plugin.i18n.settingTabS3 || "S3 хранениеконфигурация"),
-            createActionElement: () => {
-                const element = document.createElement("div");
-                return element;
-            },
-        });
-        // S3 
-        setting.addItem({
-            title: this.plugin.i18n.settingS3Enabled || "Включить S3 хранилище",
-            description: this.plugin.i18n.settingS3EnabledDesc || "Загрузка в S3 хранилище для ускорения доступа",
+            title: this.plugin.i18n.settingS3Enabled || "Включить S3",
+            description: this.plugin.i18n.settingS3EnabledDesc,
             createActionElement: () => s3EnabledCheckbox,
         });
 
-        // Paste Upload
         setting.addItem({
             title: this.plugin.i18n.settingS3PasteUpload || "Загрузка при вставке",
-            description: this.plugin.i18n.settingS3PasteUploadDesc || "Автоматическая загрузка файлов в S3 при вставке из буфера обмена",
+            description: this.plugin.i18n.settingS3PasteUploadDesc,
             createActionElement: () => s3PasteUploadCheckbox,
         });
 
-        // S3 эндпоинт
-        // S3 эндпоинт
         setting.addItem({
-            title: this.plugin.i18n.settingS3Endpoint || "S3 эндпоинтадрес",
-            description: this.plugin.i18n.settingS3EndpointDesc || "S3 эндпоинт， s3.amazonaws.com  или  MinIO адрес",
+            title: this.plugin.i18n.settingS3Endpoint || "S3 эндпоинт",
+            description: this.plugin.i18n.settingS3EndpointDesc,
             createActionElement: () => s3EndpointInput,
         });
 
-        // S3 Region
         setting.addItem({
-            title: this.plugin.i18n.settingS3Region || "Регион (Region)",
-            description: this.plugin.i18n.settingS3RegionDesc || "Например: us-east-1",
+            title: this.plugin.i18n.settingS3Region || "Регион",
             createActionElement: () => s3RegionInput,
         });
 
-        // S3 Bucket
         setting.addItem({
-            title: this.plugin.i18n.settingS3Bucket || "Бакет (Bucket)",
-            description: this.plugin.i18n.settingS3BucketDesc || "Имя бакета для хранения ресурсов",
+            title: this.plugin.i18n.settingS3Bucket || "Бакет",
             createActionElement: () => s3BucketInput,
         });
 
-        // Access Key ID
         setting.addItem({
-            title: this.plugin.i18n.settingS3AccessKey || "Access Key ID",
-            description: this.plugin.i18n.settingS3AccessKeyDesc || "ID ключа доступа S3 (хранится локально)",
+            title: "Access Key ID",
             createActionElement: () => s3AccessKeyInput,
         });
 
-        // Secret Access Key
         setting.addItem({
-            title: this.plugin.i18n.settingS3SecretKey || "Secret Access Key",
-            description: this.plugin.i18n.settingS3SecretKeyDesc || "Секретный ключ доступа S3 (хранится локально)",
+            title: "Secret Access Key",
             createActionElement: () => s3SecretKeyInput,
         });
 
-        // Custom Domain
         setting.addItem({
-            title: this.plugin.i18n.settingS3CustomDomain || "Пользовательский CDN домен",
-            description: this.plugin.i18n.settingS3CustomDomainDesc || "Использовать свой домен для доступа, например: https://cdn.example.com",
+            title: this.plugin.i18n.settingS3CustomDomain || "CDN домен",
             createActionElement: () => s3CustomDomainInput,
         });
 
-        // Path Prefix
         setting.addItem({
             title: this.plugin.i18n.settingS3PathPrefix || "Префикс пути",
-            description: this.plugin.i18n.settingS3PathPrefixDesc || "Префикс пути для организации файлов в хранилище",
             createActionElement: () => s3PathPrefixInput,
         });
+
+        setting.addItem({
+            title: this.plugin.i18n.settingS3Addressing || 'S3 Addressing Style',
+            description: this.plugin.i18n.settingS3AddressingDesc,
+            createActionElement: () => s3AddressingSelect,
+        });
+
+        setting.addItem({
+            title: this.plugin.i18n.settingS3Provider || 'S3 Provider',
+            createActionElement: () => s3ProviderSelect,
+        });
+
+        setting.addItem({
+            title: this.plugin.i18n.settingS3UrlPreview || 'S3 URL Preview',
+            createActionElement: () => {
+                setTimeout(updateUrlPreview, 0);
+                return s3UrlPreviewInput;
+            },
+        });
+
+        // Кнопки управления (Шары, Ресурсы, Логи)
+        setting.addItem({
+            title: "🛠️ " + (this.plugin.i18n.settingTabTools || "Инструменты"),
+            createActionElement: () => document.createElement("div"),
+        });
+
+        const viewSharesButton = document.createElement("button");
+        viewSharesButton.className = "b3-button b3-button--outline fn__block";
+        viewSharesButton.innerHTML = `<svg class="b3-button__icon"><use xlink:href="#iconShare"></use></svg> ${this.plugin.i18n.shareListTitle || "Все активные шары"}`;
+        viewSharesButton.onclick = async () => {
+            if (!this.isConfigured()) {
+                this.plugin.showMessage(this.plugin.i18n.shareErrorNotConfigured, 3000, "error");
+                return;
+            }
+            new ShareListDialog(this.plugin).show();
+        };
+
+        setting.addItem({
+            title: this.plugin.i18n.shareListTitle || "Все активные шары",
+            description: this.plugin.i18n.shareListViewDesc,
+            createActionElement: () => viewSharesButton,
+        });
+
+        const viewAssetsButton = document.createElement("button");
+        viewAssetsButton.className = "b3-button b3-button--outline fn__block";
+        viewAssetsButton.innerHTML = `<svg class="b3-button__icon"><use xlink:href="#iconImage"></use></svg> ${this.plugin.i18n.assetListTitle || "Управление ресурсами S3"}`;
+        viewAssetsButton.onclick = async () => {
+            new AssetListView(this.plugin).show();
+        };
+
+        setting.addItem({
+            title: this.plugin.i18n.assetListTitle || "Управление ресурсами S3",
+            description: this.plugin.i18n.assetListViewDesc,
+            createActionElement: () => viewAssetsButton,
+        });
+
+        // Логи
+        const logWrapper = document.createElement("div");
+        logWrapper.className = "fn__flex-column";
+        logWrapper.style.gap = "8px";
+
+        const logPreview = document.createElement("textarea");
+        logPreview.className = "b3-text-field fn__block";
+        logPreview.style.height = "100px";
+        logPreview.readOnly = true;
+        logPreview.placeholder = "Нажмите 'Обновить' для просмотра логов";
+
+        const logBtns = document.createElement("div");
+        logBtns.className = "fn__flex";
+        logBtns.style.gap = "8px";
+
+        const refreshLogBtn = document.createElement("button");
+        refreshLogBtn.className = "b3-button b3-button--outline fn__flex-1";
+        refreshLogBtn.textContent = "Обновить";
+        refreshLogBtn.onclick = () => { logPreview.value = this.plugin.getLogsText() || "Логов пока нет"; };
+
+        const clearLogBtn = document.createElement("button");
+        clearLogBtn.className = "b3-button b3-button--outline fn__flex-1";
+        clearLogBtn.textContent = "Очистить";
+        clearLogBtn.onclick = () => { if(confirm("Очистить логи?")) { this.plugin.clearLogs(); logPreview.value = ""; } };
+
+        logBtns.appendChild(refreshLogBtn);
+        logBtns.appendChild(clearLogBtn);
+        logWrapper.appendChild(logPreview);
+        logWrapper.appendChild(logBtns);
+
+        setting.addItem({
+            title: "🔍 " + (this.plugin.i18n.settingLogs || "Логи плагина"),
+            createActionElement: () => logWrapper,
+        });
+
+        return setting;
     }
 
     isConfigured(): boolean {

@@ -155,6 +155,8 @@
   "assetListDeleteFilteredSuccess": "批量УдалитьУспешно",
   "assetListDeleteFilteredError": "批量УдалитьОшибка",
   "assetListNoFilteredAssets": "нет符合条件的ресурс",
+  "settingTabServer": "服务器",
+  "settingTabS3": "S3 存储",
   "delete": "Удалить",
   "deleting": "Удалить...",
   "confirmDelete": "确认Удалить"

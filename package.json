@@ -13,8 +13,16 @@
     "convert:icons": "node scripts/convert-svg-to-png.js"
   },
   "keywords": [],
-  "author": "Vanessa",
+  "author": "mihazzz123",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mihazzz123/siyuan-share.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mihazzz123/siyuan-share/issues"
+  },
+  "homepage": "https://github.com/mihazzz123/siyuan-share#readme",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "8.40.0",
     "@typescript-eslint/parser": "8.40.0",

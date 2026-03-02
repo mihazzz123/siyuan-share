@@ -1,7 +1,7 @@
 {
   "name": "siyuan-share",
-  "author": "Zero",
-  "url": "https://github.com/ZeroHawkeye/siyuan-share",
+  "author": "mihazzz123",
+  "url": "https://github.com/mihazzz123/siyuan-share",
   "version": "0.0.2",
   "minAppVersion": "3.3.0",
   "backends": [
@@ -17,9 +17,9 @@
     "ru_RU": "SiYuan Share"
   },
   "description": {
-    "default": "Publish selected SiYuan documents or blocks to a public URL for quick viewing and collaboration.",
-    "zh_CN": "将选择的思源笔记文档或块发布为公网可访问链接，便于快速查看与协作。",
-    "ru_RU": "Публикуйте выбранные документы или блоки SiYuan в виде общедоступных веб-страниц для совместной работы."
+    "default": "Publish selected SiYuan documents or blocks to a public URL. Fork of https://github.com/zerx-lab/siyuan-share",
+    "zh_CN": "将选择的思源笔记文档或块发布为公网可访问链接，便于快速查看与协作。Fork 自 https://github.com/zerx-lab/siyuan-share",
+    "ru_RU": "Публикуйте документы или блоки SiYuan в виде общедоступных веб-страниц. Форк https://github.com/zerx-lab/siyuan-share"
   },
   "readme": {
     "default": "README.md",
@@ -37,5 +37,6 @@
   "keywords": [
     "online sharing",
     "在线分享"
-  ]
+  ],
+  "icon": "icon.png"
 }
